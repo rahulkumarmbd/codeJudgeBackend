@@ -3,9 +3,24 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+require("dotenv").config();
+const mongoose = require("mongoose");
+
+const db = process.env.mongoDB;
+if(db){
+  mongoose.connect(db,{useNewUrlParser:true}).then((res) => {
+    console.log("connected mongoDB")
+  }).catch((err) => {
+    console.log(err);
+    console.log("something went wrong");
+  })
+}else{
+  console.log("not connected with mongodb");
+}
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+const userController = require("./controllers/user.controller");
 
 var app = express();
 
@@ -21,6 +36,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use("/api",userController);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
